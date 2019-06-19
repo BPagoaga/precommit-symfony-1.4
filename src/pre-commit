@@ -1,0 +1,41 @@
+#!/bin/bash
+EXITCODE=0
+
+echo -e "Running \e[31mPHP Lint\e[0m & \e[31mPHP Code Sniffer\e[0m for checking code error and PSR2 standard..."
+# php files that are staged in git but not deleted
+PHP_FILES=$(git diff --diff-filter=d --cached --name-only | grep -E '\.php$')
+JS_FILES=$(git diff --diff-filter=d --cached --name-only | grep -E '\.js$')
+
+for file in $PHP_FILES
+do
+	echo -e "\e[32m" $file "\e[0m"
+	echo -e "Running \e[31mPHP Lint\e[0m for checking Syntax Error!"
+	php -l -d display_errors=0 $file
+	if [ $? != 0 ]
+    then
+        echo -e "\e[31mFix the error before commit.\e[0m"
+        EXITCODE=1
+    fi
+
+	echo -e "\nRunning \e[31mCode Sniffer\e[0m. Code standard \e[31mPSR2\e[0m."
+	./vendor/bin/phpcs --standard=PSR2 --encoding=utf-8 -n -p $file
+	if [ $? -ne 0 ]; then
+		echo -e "Fix the error before commit please"
+		echo -e "Run \e[33m./lib/vendor/bin/phpcbf --standard=PSR2 $file \e[0mfor automatic fix"
+		echo "or fix it manually."
+		EXITCODE=1
+	fi
+done
+
+#@TODO gérer les fichiers js
+# avec prettier
+
+# Check for var_dump
+DIFF=$(git diff --cached --name-only -G "(var_dump|v::dump|dump|print_r|exit|die).*\\(.*\\)|@TEMP\W|<<<<<<<<\W|>>>>>>>>\W|========\W");
+if [ ! -z "$DIFF" ]; then
+    echo -e "\nYou've left a var_dump|v::dump|dump|print_r|exit|die|@TEMP|<<<<<|>>>>>|===== in one of your files!"
+    echo -e $DIFF | tr " " "\n";
+    EXITCODE=1
+fi
+
+exit $EXITCODE
