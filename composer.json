@@ -1,14 +1,8 @@
 {
-  "name": "bpagoaga/precommit-symfony-1.4",
+  "name": "bpagoaga/precommit_symfony_1.4",
   "description": "Create a git hook pre-commit to lint and fix syntax errors in a php project",
   "type": "library",
   "license": "MIT",
-  "repositories": [
-    {
-      "type": "vcs",
-      "url": "https://github.com/BPagoaga/precommit-symfony-1.4"
-    }
-  ],
   "require": {
     "squizlabs/php_codesniffer": "^3.4"
   },
