@@ -6,7 +6,7 @@
   "repositories": [
     {
       "type": "vcs",
-      "url": "url github"
+      "url": "https://github.com/BPagoaga/precommit-symfony-1.4"
     }
   ],
   "require": {
